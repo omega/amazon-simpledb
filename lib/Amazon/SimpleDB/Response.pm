@@ -14,7 +14,12 @@ our %SPECIALS = (
 
 sub new {
     my $class = shift;
-    my $args = shift || {};
+    my $args = {};
+    if (ref($_[0]) eq 'HASH') {
+        $args = shift;
+    } else {
+        $args = +{ @_ };
+    }
     croak "No account" unless $args->{account};
     my $r = $args->{http_response};
     croak 'No HTTP::Response object in http_response'
@@ -41,6 +46,7 @@ sub new {
     }
     my $self = bless {}, $class;
     $self->{'account'}       = $args->{account};
+    $self->{'domain'}       = $args->{domain} if $args->{domain};
     $self->{'http_response'} = $r;
     $self->{'http_status'}   = $r->code;
     $self->{'content'}       = $tree;
